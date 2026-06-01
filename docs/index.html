@@ -1,17 +1,891 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>deep-trouble</title>
-  <style>
-    body { font-family: sans-serif; max-width: 800px; margin: 80px auto; padding: 0 20px; color: #222; }
-    h1 { font-size: 2.5rem; }
-    p { color: #555; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Trouble – Classic Boulder Dash Puzzle Game for iPhone &amp; iPad</title>
+    <meta name="description" content="Deep Trouble is a Boulder Dash-inspired puzzle adventure for iPhone and iPad. Dodge falling boulders and outsmart cunning enemies across 30 handcrafted underground levels.">
+    <meta name="keywords" content="Deep Trouble, boulder dash iOS, puzzle game iPhone, underground adventure, retro arcade iOS, iPad puzzle, SpriteKit game">
+    <meta name="author" content="Underground Kidz">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://YOUR_DOMAIN_HERE/"><!-- TODO: replace with real domain -->
+    <meta property="og:title" content="Deep Trouble – Classic Puzzle Adventure for iOS">
+    <meta property="og:description" content="Dodge boulders and survive 30 levels of underground madness. A Boulder Dash-inspired classic, reimagined for iPhone and iPad.">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Deep Trouble – Classic Puzzle Adventure for iOS">
+    <meta name="twitter:description" content="Dodge boulders and survive 30 levels of underground madness on iPhone &amp; iPad.">
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://YOUR_DOMAIN_HERE/"><!-- TODO: replace with real domain -->
+
+    <!-- Structured data: App -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "MobileApplication",
+        "name": "Deep Trouble",
+        "description": "Boulder Dash-inspired puzzle adventure for iPhone and iPad with 30 handcrafted underground levels. Dodge falling boulders and outsmart cunning enemies.",
+        "applicationCategory": "GameApplication",
+        "applicationSubCategory": "PuzzleGame",
+        "operatingSystem": "iOS 18.0+",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Underground Kidz",
+            "email": "support@deeptrouble-game.fneumann.com"
+        },
+        "url": "https://YOUR_APP_STORE_URL"
+    }
+    </script>
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:      #080808;
+            --bg2:     #101010;
+            --bg3:     #1a1a1a;
+            --red:     #cc1a1a;
+            --red-glow: rgba(204,26,26,0.35);
+            --gold:    #f0c040;
+            --grey:    #999;
+            --text:    #ddd;
+            --dim:     #888;
+            --border:  #2a2a2a;
+            --font:    'Menlo', 'Monaco', 'Courier New', 'Lucida Console', monospace;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            font-size: 15px;
+            line-height: 1.75;
+        }
+
+        /* ── Navigation ── */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(8,8,8,0.96);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(8px);
+        }
+        .nav-inner {
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            height: 52px;
+        }
+        .nav-brand {
+            color: var(--red);
+            font-size: 15px;
+            font-weight: bold;
+            text-decoration: none;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--dim);
+            text-decoration: none;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: color 0.15s;
+        }
+        .nav-links a:hover { color: var(--text); }
+        .nav-links a.active { color: var(--red); }
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--dim);
+            font-size: 22px;
+            padding: 4px 8px;
+            line-height: 1;
+        }
+
+        /* ── Sections ── */
+        section { padding: 80px 24px; }
+        .inner { max-width: 960px; margin: 0 auto; }
+        section:nth-of-type(even) { background: var(--bg2); }
+
+        h2 {
+            color: var(--red);
+            font-size: 20px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 36px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        h2::before { content: '> '; color: var(--border); }
+
+        h3 {
+            color: var(--gold);
+            font-size: 14px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin: 32px 0 10px;
+        }
+
+        p { margin-bottom: 14px; }
+        p:last-child { margin-bottom: 0; }
+
+        a { color: var(--red); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        strong { color: var(--text); }
+
+        /* ── Hero ── */
+        #home {
+            min-height: 94vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: var(--bg);
+            padding: 60px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        #home::before {
+            /* scanlines */
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 3px,
+                rgba(255,255,255,0.012) 3px,
+                rgba(255,255,255,0.012) 4px
+            );
+            pointer-events: none;
+        }
+        .hero { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; width: 100%; }
+
+        .hero-badge {
+            display: inline-block;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--dim);
+            border: 1px solid var(--border);
+            padding: 5px 16px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+        }
+
+        .hero-sprite {
+            display: block;
+            width: 128px;
+            height: 128px;
+            margin: 0 auto 20px;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            filter: drop-shadow(0 0 16px rgba(204,26,26,0.4));
+        }
+
+        .hero-title {
+            font-size: clamp(44px, 11vw, 100px);
+            font-weight: bold;
+            color: var(--red);
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            line-height: 1;
+            margin-bottom: 10px;
+            text-shadow: 0 0 60px var(--red-glow), 0 0 20px var(--red-glow);
+            animation: pulse 3s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { text-shadow: 0 0 60px var(--red-glow), 0 0 20px var(--red-glow); }
+            50% { text-shadow: 0 0 80px rgba(204,26,26,0.55), 0 0 30px rgba(204,26,26,0.3); }
+        }
+
+        .hero-sub {
+            font-size: clamp(11px, 2vw, 14px);
+            color: var(--grey);
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 36px;
+        }
+
+        .hero-desc {
+            font-size: 15px;
+            color: var(--dim);
+            max-width: 480px;
+            margin: 0 auto 44px;
+            line-height: 1.9;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--red);
+            color: #fff;
+            padding: 14px 38px;
+            font-family: var(--font);
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-decoration: none;
+            text-transform: uppercase;
+            border: 2px solid var(--red);
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover {
+            background: transparent;
+            color: var(--red);
+            text-decoration: none;
+            box-shadow: 0 0 20px var(--red-glow);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            margin-top: 56px;
+            padding-top: 36px;
+            border-top: 1px solid var(--border);
+        }
+        .stat { text-align: center; }
+        .stat-n { font-size: 30px; color: var(--gold); font-weight: bold; line-height: 1; }
+        .stat-l { font-size: 10px; color: var(--dim); letter-spacing: 2px; text-transform: uppercase; margin-top: 6px; }
+
+        /* ── Feature cards ── */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+            gap: 16px;
+            margin-top: 32px;
+        }
+        .card {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            padding: 24px;
+            transition: border-color 0.2s;
+        }
+        .card:hover { border-color: #444; }
+        .card-icon { font-size: 26px; margin-bottom: 14px; }
+        .card-title { color: var(--text); font-weight: bold; font-size: 14px; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .card-body { color: var(--dim); font-size: 13px; line-height: 1.65; }
+
+        /* ── Controls ── */
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+            margin-top: 24px;
+        }
+        .ctrl {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 18px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+        }
+        .ctrl-key {
+            flex-shrink: 0;
+            width: 46px;
+            height: 46px;
+            background: var(--border);
+            border: 1px solid #3a3a3a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .ctrl-title { color: var(--text); font-size: 13px; font-weight: bold; margin-bottom: 4px; }
+        .ctrl-body { color: var(--dim); font-size: 12px; line-height: 1.6; }
+
+        /* ── HUD bar ── */
+        .hud {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #0d0d0d;
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            font-size: 13px;
+            margin-top: 24px;
+            overflow-x: auto;
+            gap: 16px;
+            white-space: nowrap;
+        }
+        .hud-item span:first-child { color: var(--dim); }
+        .hud-item span:last-child { color: var(--text); margin-left: 4px; }
+
+        /* ── Tips ── */
+        .tips { list-style: none; counter-reset: tips; margin-top: 8px; }
+        .tips li {
+            counter-increment: tips;
+            display: flex;
+            gap: 18px;
+            align-items: flex-start;
+            padding: 15px 20px;
+            margin-bottom: 8px;
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            font-size: 14px;
+            color: var(--dim);
+            line-height: 1.65;
+            transition: border-color 0.15s;
+        }
+        .tips li:hover { border-color: #3a3a3a; }
+        .tips li::before {
+            content: counter(tips, decimal-leading-zero);
+            color: var(--red);
+            font-weight: bold;
+            font-size: 12px;
+            flex-shrink: 0;
+            width: 22px;
+            padding-top: 2px;
+        }
+
+        /* ── Timeline ── */
+        .timeline { padding-left: 28px; position: relative; margin-top: 32px; }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px; top: 8px; bottom: 8px;
+            width: 1px;
+            background: var(--border);
+        }
+        .tl-item { position: relative; margin-bottom: 36px; }
+        .tl-item:last-child { margin-bottom: 0; }
+        .tl-item::before {
+            content: '';
+            position: absolute;
+            left: -24px; top: 7px;
+            width: 9px; height: 9px;
+            background: var(--red);
+        }
+        .tl-year { color: var(--red); font-size: 11px; letter-spacing: 2px; margin-bottom: 4px; }
+        .tl-title { color: var(--text); font-weight: bold; font-size: 15px; margin-bottom: 6px; }
+        .tl-body { color: var(--dim); font-size: 13px; line-height: 1.65; }
+
+        /* ── FAQ ── */
+        .faq-item {
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+        .faq-q {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            cursor: pointer;
+            background: var(--bg3);
+            font-size: 14px;
+            color: var(--text);
+            user-select: none;
+            transition: background 0.15s;
+        }
+        .faq-q:hover { background: #222; }
+        .faq-arrow {
+            color: var(--red);
+            font-size: 12px;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+        }
+        .faq-item.open .faq-arrow { transform: rotate(90deg); }
+        .faq-a {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.28s ease, padding 0.28s ease;
+            font-size: 13px;
+            color: var(--dim);
+            line-height: 1.75;
+            padding: 0 20px;
+        }
+        .faq-item.open .faq-a { max-height: 280px; padding: 16px 20px; }
+
+        /* ── Contact ── */
+        .contact-box {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            padding: 32px;
+            display: inline-block;
+            max-width: 460px;
+        }
+        .contact-label {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--dim);
+            margin-bottom: 10px;
+        }
+        .contact-email {
+            display: block;
+            color: var(--gold);
+            font-size: 17px;
+            margin-bottom: 16px;
+            word-break: break-all;
+        }
+        .contact-email:hover { text-decoration: underline; }
+        .contact-note { font-size: 12px; color: var(--dim); line-height: 1.65; }
+
+        .no-cookie {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 28px;
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--dim);
+        }
+
+        /* ── Footer ── */
+        footer {
+            background: #040404;
+            border-top: 1px solid var(--border);
+            padding: 32px 24px;
+            text-align: center;
+            font-size: 12px;
+            color: #555;
+        }
+        footer a { color: #555; }
+        footer a:hover { color: var(--dim); }
+        .footer-links { margin-bottom: 10px; }
+        .footer-links a { margin: 0 10px; }
+
+        /* ── Responsive ── */
+        @media (max-width: 640px) {
+            .nav-links { display: none; }
+            .nav-links.open {
+                display: flex;
+                flex-direction: column;
+                position: fixed;
+                top: 52px; left: 0; right: 0;
+                background: rgba(8,8,8,0.98);
+                border-bottom: 1px solid var(--border);
+                padding: 16px 24px 24px;
+                gap: 18px;
+                z-index: 99;
+            }
+            .nav-toggle { display: block; }
+            section { padding: 60px 16px; }
+            h2 { font-size: 17px; }
+            .hero-stats { gap: 24px; }
+            .stat-n { font-size: 24px; }
+            .contact-box { max-width: 100%; width: 100%; }
+        }
+    </style>
 </head>
 <body>
-  <h1>deep-trouble</h1>
-  <p>A Delulu Adventure</p>
+
+<!-- ── Navigation ── -->
+<nav id="nav">
+    <div class="nav-inner">
+        <a href="#home" class="nav-brand">Deep Trouble</a>
+        <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">☰</button>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#about">About</a></li>
+            <li><a href="#play">How to Play</a></li>
+            <li><a href="#tips">Tips</a></li>
+            <li><a href="#history">History</a></li>
+            <li><a href="#future">Future</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#support">Support</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section id="home">
+    <div class="hero">
+        <div class="hero-badge">Underground Kidz</div>
+        <h1 class="hero-title">Deep&nbsp;Trouble</h1>
+        <p class="hero-sub">A Delulu Adventure</p>
+        <img src="hero.png" alt="Deep Trouble hero character" class="hero-sprite">
+        <p class="hero-desc">
+            Dodge falling boulders.<br>
+            Outsmart enemies.<br>
+            Find the exit.<br>
+            30 handcrafted underground levels await.
+        </p>
+        <!-- TODO: replace href with real App Store URL -->
+        <a href="https://apps.apple.com/app/YOUR_APP_ID" class="btn">◆ &nbsp;Get it on the App Store</a>
+
+        <div class="hero-stats">
+            <div class="stat">
+                <div class="stat-n">30</div>
+                <div class="stat-l">Levels</div>
+            </div>
+            <div class="stat">
+                <div class="stat-n">4</div>
+                <div class="stat-l">Grades</div>
+            </div>
+            <div class="stat">
+                <div class="stat-n">221</div>
+                <div class="stat-l">Bats</div>
+            </div>
+            <div class="stat">
+                <div class="stat-n">342</div>
+                <div class="stat-l">Boulders</div>
+            </div>
+            <div class="stat">
+                <div class="stat-n">0</div>
+                <div class="stat-l">Data Collected</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── About ── -->
+<section id="about">
+    <div class="inner">
+        <h2>About the Game</h2>
+        <p>
+            <strong>Deep Trouble</strong> is a love letter to the golden age of arcade puzzle games. Inspired by the legendary <em>Boulder Dash</em> (1984), it drops you underground as a lone adventurer with one goal: find the exit and get out alive.
+        </p>
+        <p>
+            Sounds simple. It isn't. Boulders tumble with merciless physics, bats patrol dark tunnels, and every decision ripples through the cave. Master the art of controlled chaos — use falling rocks to crush enemies, carve safe paths through packed dirt, and race against the clock through 30 uniquely crafted levels.
+        </p>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon">◆</div>
+                <div class="card-title">Classic Mechanics, Modern Feel</div>
+                <div class="card-body">The rock-solid puzzle gameplay you remember, rebuilt from scratch for iPhone and iPad. Every tile texture is handcrafted — no asset store, no shortcuts.</div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🎮</div>
+                <div class="card-title">Precision D-Pad Controls</div>
+                <div class="card-body">Virtual d-pad tuned for mobile play. One tap moves exactly one tile. Hold to repeat. No ghost inputs, no accidental double-moves.</div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🦇</div>
+                <div class="card-title">Lurking Bats</div>
+                <div class="card-body">Dark, winged bats patrol the tunnels following their own twisted logic. Learn their pattern — or lure them under a well-placed boulder.</div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🏆</div>
+                <div class="card-title">Score &amp; Grade System</div>
+                <div class="card-body">Every second counts. Complete all 30 levels to receive your final grade: C, B, A, or the elusive S rank.</div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🎵</div>
+                <div class="card-title">Beat-Driven Intro Screen</div>
+                <div class="card-body">The title screen pulses in sync with the soundtrack using real-time onset detection. Audio respects your ringer switch — silent mode means silent game.</div>
+            </div>
+            <div class="card">
+                <div class="card-icon">🔒</div>
+                <div class="card-title">Zero Data Collection</div>
+                <div class="card-body">No accounts. No analytics. No ad SDKs. Deep Trouble collects absolutely nothing about you. Your underground adventures stay entirely yours.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── How to Play ── -->
+<section id="play">
+    <div class="inner">
+        <h2>How to Play</h2>
+
+        <h3>Objective</h3>
+        <p>
+            Find the exit door and reach it before time runs out. You start with 10 lives — when you run out, the game is over.
+        </p>
+
+        <h3>Controls</h3>
+        <div class="controls">
+            <div class="ctrl">
+                <div class="ctrl-key">✛</div>
+                <div>
+                    <div class="ctrl-title">D-Pad (bottom-right)</div>
+                    <div class="ctrl-body">Tap to move one tile. Hold to move continuously after a short delay. Always visible at 25% opacity so it never blocks your view.</div>
+                </div>
+            </div>
+            <div class="ctrl">
+                <div class="ctrl-key">📳</div>
+                <div>
+                    <div class="ctrl-title">Shake to Give Up</div>
+                    <div class="ctrl-body">Trapped with no escape? Shake the device to sacrifice your current life and restart the level. Useful when boulders seal you in.</div>
+                </div>
+            </div>
+            <div class="ctrl">
+                <div class="ctrl-key">⏸</div>
+                <div>
+                    <div class="ctrl-title">Long Press to Skip</div>
+                    <div class="ctrl-body">Hold outside the d-pad for 1.5 seconds to skip to the next level. The skipped level moves to the end of the queue — you'll still need to finish it to see the ending.</div>
+                </div>
+            </div>
+            <div class="ctrl">
+                <div class="ctrl-key">👆</div>
+                <div>
+                    <div class="ctrl-title">Tap to Continue</div>
+                    <div class="ctrl-body">After dying, completing a level, or hitting game over, tap anywhere on the screen to continue.</div>
+                </div>
+            </div>
+        </div>
+
+        <h3>The HUD</h3>
+        <div class="hud">
+            <div class="hud-item"><span>♥</span><span>lives</span></div>
+            <div class="hud-item"><span>LVL:</span><span>current level</span></div>
+            <div class="hud-item"><span>⏱</span><span>time remaining</span></div>
+            <div class="hud-item"><span>SCORE:</span><span>total</span></div>
+        </div>
+
+        <h3>Scoring</h3>
+        <p>
+            Per level: <strong style="color:var(--gold)">time remaining × 5</strong>. Scores stack across all 30 levels. Racing for S rank means finishing every level as fast as possible.
+        </p>
+        <p>Final grade thresholds: <strong>S</strong> ≥ 70,000 &nbsp;|&nbsp; <strong>A</strong> ≥ 40,000 &nbsp;|&nbsp; <strong>B</strong> ≥ 15,000 &nbsp;|&nbsp; <strong>C</strong> below 15,000.</p>
+
+        <h3>Physics</h3>
+        <p>
+            Boulders obey gravity — they fall when unsupported, roll off rounded surfaces, and slide off the edge of walls. A boulder dislodged from above will crush anything underneath, including you and your enemies. Learn to use this. It's half the game.
+        </p>
+    </div>
+</section>
+
+<!-- ── Tips ── -->
+<section id="tips">
+    <div class="inner">
+        <h2>Tips &amp; Tricks</h2>
+
+        <ol class="tips">
+            <li><strong>Level 1 is your practice ground.</strong> The first level has a generous lives safety net — game over refills your hearts to 10. Use it to experiment with boulder physics without consequences.</li>
+            <li><strong>Dig sideways before digging down.</strong> A column of dirt directly beneath a boulder is a death trap. Carve a horizontal channel first so falling boulders have room to roll clear.</li>
+            <li><strong>Bats go straight first.</strong> Bats prefer to go straight, then turn right if blocked. They're predictable on narrow corridors — memorize their loop and walk past them, or trap them.</li>
+
+
+            <li><strong>Stuck? Shake to restart.</strong> If there's no way forward, shake the device to restart the level. You'll lose a life, so use it when you're truly trapped.</li>
+            <li><strong>Skipped levels come back.</strong> Long-pressing skips a level to the end of the queue — it does not remove it. You must complete all 30 to reach the final score screen. Skip strategically, not habitually.</li>
+            <li><strong>Speed is everything.</strong> Your score is purely time-based — every second you shave off is points in the bank. Learn the level layout, commit to the fastest route, and move.</li>
+            <li><strong>Scan before you move.</strong> Spend a moment mapping the level. Locate the exit, spot enemy patrol zones, and identify which boulders are about to fall. One moment of observation beats three wasted lives.</li>
+            <li><strong>Watch your path to the exit.</strong> A boulder can seal the door while you're navigating around enemies. Always keep the exit route in mind, not just the immediate threat.</li>
+            <li><strong>Patience beats panic.</strong> Enemies have fixed, repeatable patterns. Watch a bat for two full cycles before committing to a path. Rushing through a patrol zone is how most lives get lost.</li>
+        </ol>
+    </div>
+</section>
+
+<!-- ── History ── -->
+<section id="history">
+    <div class="inner">
+        <h2>Game History</h2>
+        <p>
+            Deep Trouble stands on the shoulders of a giant. <em>Boulder Dash</em>, created by Peter Liepa and Chris Gray and published by First Star Software in 1984, was one of the first games to fuse real-time physics with puzzle design. It sold over one million copies in its first year on the Commodore 64, Apple II, and Atari platforms, and spawned a genre that endures to this day.
+        </p>
+        <p>
+            Deep Trouble is Underground Kidz's take on that legacy — a ground-up reimagining that preserves what made the original great while building on top of it for modern iPhones and iPads.
+        </p>
+
+        <div class="timeline">
+            <div class="tl-item">
+                <div class="tl-year">1984</div>
+                <div class="tl-title">Boulder Dash is Born</div>
+                <div class="tl-body">Peter Liepa and Chris Gray release Boulder Dash. Rockford the miner digs through caverns collecting diamonds while boulders fall and enemies patrol. A genre is invented.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-year">1984 – 2000s</div>
+                <div class="tl-title">A Thousand Clones</div>
+                <div class="tl-body">Boulder Dash spawns dozens of sequels and spiritual successors across home computers, consoles, and eventually mobile. The formula — dig, collect, survive — proves timeless.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-year">2015</div>
+                <div class="tl-title">Deep Trouble Begins</div>
+                <div class="tl-body">Underground Kidz starts building Deep Trouble in Swift and SpriteKit, inspired by Apple's new game framework. No asset store, no shortcuts — every tile texture is handcrafted.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-year">2015 – 2025</div>
+                <div class="tl-title">Life Gets in the Way</div>
+                <div class="tl-body">Work, family, and the general chaos of being a human being conspire to pause development for 16 years. The cave waits patiently.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-year">2026</div>
+                <div class="tl-title">Development Resumes &amp; Deep Trouble Ships</div>
+                <div class="tl-body">After 30 levels, a cast of lurking bats, a beat-reactive intro screen, more boulder physics than is healthy, and an embarrassing number of playtests, Deep Trouble finally arrives on the App Store.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── What's Next ── -->
+<section id="future">
+    <div class="inner">
+        <h2>What's Next</h2>
+        <p>
+            Deep Trouble is just the beginning. If there's demand, version 2 is already taking shape in our heads — more levels, a level editor so you can build and share your own underground nightmares, treasures, and bonus items to discover along the way.
+        </p>
+        <p>
+            And keep an eye out for more games featuring our hero <strong>Delulu</strong>. The delulu adventure is far from over.
+        </p>
+    </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section id="faq">
+    <div class="inner">
+        <h2>FAQ</h2>
+
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+                <span>Is Deep Trouble free to play?</span>
+                <span class="faq-arrow">▶</span>
+            </div>
+            <div class="faq-a">Check the App Store listing for the current price. There are no in-app purchases, no ads, and no subscriptions — you get the complete game with all 30 levels.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+                <span>Does the game collect any personal data?</span>
+                <span class="faq-arrow">▶</span>
+            </div>
+            <div class="faq-a">No. Deep Trouble collects zero personal data. There are no accounts, no analytics SDKs, no crash reporters, and no advertising frameworks anywhere in the app. Your gameplay stays entirely on your device. This is declared in the app's privacy manifest (PrivacyInfo.xcprivacy) and verified by App Store review.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+                <span>The game has no sound — is that a bug?</span>
+                <span class="faq-arrow">▶</span>
+            </div>
+            <div class="faq-a">Not a bug — this is intentional. Deep Trouble respects iOS's ringer/silent switch. If your phone is on silent, the game is silent too, which is the expected behavior for playing in public. Toggle the ringer switch on the left side of your device to restore audio.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+                <span>I'm completely stuck on a level — can I skip it?</span>
+                <span class="faq-arrow">▶</span>
+            </div>
+            <div class="faq-a">Yes. Long-press anywhere outside the d-pad for 1.5 seconds to skip the current level. It moves to the end of the queue and you'll return to it later. You can also shake the device at any time to sacrifice your current life and retry the level fresh. Note: you must complete all 30 levels to reach the final score screen.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+                <span>I keep accidentally giving up when I don't mean to.</span>
+                <span class="faq-arrow">▶</span>
+            </div>
+            <div class="faq-a">The shake gesture is tuned to require a deliberate shake rather than a casual bump — light movements while walking shouldn't trigger it. If it's happening too frequently on your device, try holding your phone more firmly during play, or rest it on a flat surface.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+                <span>The d-pad seems to move my character more than one tile at a time.</span>
+                <span class="faq-arrow">▶</span>
+            </div>
+            <div class="faq-a">A single tap should move the character exactly one tile. The d-pad does repeat movement when held (after a ~350ms delay, then every 120ms). If you're seeing unexpected multi-tile jumps on single taps, please contact support with your iOS version and device model — that would be a bug we want to fix.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+                <span>What iOS version is required?</span>
+                <span class="faq-arrow">▶</span>
+            </div>
+            <div class="faq-a">Deep Trouble requires iOS 18.0 or later and works on iPhone and iPad. The game is landscape-only and adapts to all modern screen sizes. It is not available on Apple Watch or Apple TV.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+                <span>How is the final grade calculated?</span>
+                <span class="faq-arrow">▶</span>
+            </div>
+            <div class="faq-a">Your total score is the sum of (time remaining × 5) across all 30 levels. Grade thresholds: S ≥ 70,000 | A ≥ 40,000 | B ≥ 15,000 | C = below 15,000. S rank requires fast, efficient play on every single level — good luck.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+                <span>How do I beat the later levels?</span>
+                <span class="faq-arrow">▶</span>
+            </div>
+            <div class="faq-a">The Tips &amp; Tricks section above has everything you need, but the short version: scan before you move, use boulders as weapons against enemies, never stand below unsupported boulders, and shake early when you're trapped rather than waiting for the timer.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Support ── -->
+<section id="support">
+    <div class="inner">
+        <h2>Support</h2>
+        <p>
+            Found a bug? Got a question not answered above? We read every message and use the feedback to improve the game. Deep Trouble is a small indie project — your reports genuinely matter.
+        </p>
+
+        <div class="contact-box">
+            <div class="contact-label">Contact</div>
+            <a href="mailto:support@deeptrouble-game.fneumann.com" class="contact-email">support@deeptrouble-game.fneumann.com</a>
+            <p class="contact-note">
+                When reporting a bug, please include your <strong>iOS version</strong>, <strong>device model</strong>, and which <strong>level number</strong> you were on. A description of what happened (and what you expected) helps a lot. Screenshots are always welcome.
+            </p>
+        </div>
+
+        <div class="no-cookie">
+            <span>🔒</span>
+            <span>This website uses no cookies and collects no personal data.</span>
+        </div>
+    </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+    <div class="footer-links">
+        <a href="#about">About</a>
+        <a href="#play">How to Play</a>
+        <a href="#tips">Tips</a>
+        <a href="#faq">FAQ</a>
+        <a href="#support">Contact</a>
+    </div>
+    <p>&copy; 2026 Underground Kidz &nbsp;·&nbsp; All rights reserved</p>
+    <p style="margin-top: 8px; font-size: 11px; color: #3a3a3a;">Deep Trouble is not affiliated with First Star Software or the original Boulder Dash franchise.</p>
+</footer>
+
+<script>
+    // Mobile nav
+    function toggleNav() {
+        document.getElementById('navLinks').classList.toggle('open');
+    }
+    document.querySelectorAll('#navLinks a').forEach(a =>
+        a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open'))
+    );
+
+    // FAQ accordion
+    function toggleFaq(el) {
+        const item = el.parentElement;
+        const wasOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+        if (!wasOpen) item.classList.add('open');
+    }
+
+    // Active nav link tracking
+    const allSections = document.querySelectorAll('section[id]');
+    const allNavLinks = document.querySelectorAll('#navLinks a');
+    new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                const id = e.target.id;
+                allNavLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+            }
+        });
+    }, { rootMargin: '-35% 0px -60% 0px' }).observe !== undefined &&
+    allSections.forEach(s => new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                const id = e.target.id;
+                allNavLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+            }
+        });
+    }, { rootMargin: '-35% 0px -60% 0px' }).observe(s));
+</script>
+
 </body>
 </html>
