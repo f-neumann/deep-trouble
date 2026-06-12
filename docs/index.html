@@ -569,8 +569,8 @@
             </div>
             <div class="card">
                 <div class="card-icon">🎮</div>
-                <div class="card-title">Precision D-Pad Controls</div>
-                <div class="card-body">Virtual d-pad tuned for mobile play. One tap moves exactly one tile. Hold to repeat. No ghost inputs, no accidental double-moves.</div>
+                <div class="card-title">D-Pad or Joystick — Your Choice</div>
+                <div class="card-body">Play with a virtual d-pad or switch to an analog joystick with a single tap on the HUD icon. Both are tuned for tile-precise movement with no ghost inputs.</div>
             </div>
             <div class="card">
                 <div class="card-icon">🦇</div>
@@ -584,8 +584,8 @@
             </div>
             <div class="card">
                 <div class="card-icon">🎵</div>
-                <div class="card-title">Beat-Driven Intro Screen</div>
-                <div class="card-body">The title screen pulses in sync with the soundtrack using real-time onset detection. Audio respects your ringer switch — silent mode means silent game.</div>
+                <div class="card-title">Beat-Driven Intro &amp; Step Sounds</div>
+                <div class="card-body">The title screen pulses with the beat. In-game, footsteps change sound depending on what you're walking through — dirt crunches differently from open ground. A speaker toggle in the HUD mutes everything instantly.</div>
             </div>
             <div class="card">
                 <div class="card-icon">🔒</div>
@@ -616,6 +616,13 @@
                 </div>
             </div>
             <div class="ctrl">
+                <div class="ctrl-key">◎</div>
+                <div>
+                    <div class="ctrl-title">Analog Joystick (bottom-right)</div>
+                    <div class="ctrl-body">Alternative to the d-pad — drag in any direction to move. Tile-precise: dominant axis wins, so diagonal drags snap cleanly to a single direction.</div>
+                </div>
+            </div>
+            <div class="ctrl">
                 <div class="ctrl-key">📳</div>
                 <div>
                     <div class="ctrl-title">Shake to Give Up</div>
@@ -641,10 +648,15 @@
         <h3>The HUD</h3>
         <div class="hud">
             <div class="hud-item"><span>♥</span><span>lives</span></div>
+            <div class="hud-item"><span>✛/◎</span><span>control toggle</span></div>
+            <div class="hud-item"><span>🔊/🔇</span><span>sound toggle</span></div>
             <div class="hud-item"><span>LVL:</span><span>current level</span></div>
             <div class="hud-item"><span>⏱</span><span>time remaining</span></div>
             <div class="hud-item"><span>SCORE:</span><span>total</span></div>
         </div>
+        <p style="margin-top:14px; font-size:13px; color:var(--dim);">
+            Tap the control icon to switch between d-pad and joystick. Tap the speaker icon to mute or unmute. Both preferences are saved — they carry over between sessions.
+        </p>
 
         <h3>Scoring</h3>
         <p>
@@ -672,6 +684,7 @@
 
             <li><strong>Stuck? Shake to restart.</strong> If there's no way forward, shake the device to restart the level. You'll lose a life, so use it when you're truly trapped.</li>
             <li><strong>Skipped levels come back.</strong> Long-pressing skips a level to the end of the queue — it does not remove it. You must complete all 30 to reach the final score screen. Skip strategically, not habitually.</li>
+            <li><strong>Game over sends you to a checkpoint, not the beginning.</strong> If you lose all your lives, you restart from the last level that's a multiple of 5 — so dying on level 8 puts you back at level 5, not level 1. Keep that in mind when deciding whether to push your luck.</li>
             <li><strong>Speed is everything.</strong> Your score is purely time-based — every second you shave off is points in the bank. Learn the level layout, commit to the fastest route, and move.</li>
             <li><strong>Scan before you move.</strong> Spend a moment mapping the level. Locate the exit, spot enemy patrol zones, and identify which boulders are about to fall. One moment of observation beats three wasted lives.</li>
             <li><strong>Watch your path to the exit.</strong> A boulder can seal the door while you're navigating around enemies. Always keep the exit route in mind, not just the immediate threat.</li>
@@ -760,7 +773,15 @@
                 <span>The game has no sound — is that a bug?</span>
                 <span class="faq-arrow">▶</span>
             </div>
-            <div class="faq-a">Not a bug — this is intentional. Deep Trouble respects iOS's ringer/silent switch. If your phone is on silent, the game is silent too, which is the expected behavior for playing in public. Toggle the ringer switch on the left side of your device to restore audio.</div>
+            <div class="faq-a">Two things to check. First, the speaker icon in the HUD — tap it to unmute if the icon shows a crossed-out speaker. Second, Deep Trouble respects iOS's ringer/silent switch. If your phone is on silent, the game is silent regardless of the in-game setting. Toggle the ringer switch on the left side of your device to restore audio.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">
+                <span>Can I switch between the d-pad and the joystick?</span>
+                <span class="faq-arrow">▶</span>
+            </div>
+            <div class="faq-a">Yes. Tap the small control icon in the top bar of the HUD — it shows the control you'll switch to (d-pad icon means you're on joystick, joystick icon means you're on d-pad). Your choice is saved and persists between sessions.</div>
         </div>
 
         <div class="faq-item">
